@@ -23,6 +23,11 @@ class MessageController(val service: MessageService) {
 	fun post(@RequestBody message: Message) {
 		service.save(message)
 	}
+
+	@DeleteMapping("/")
+	fun delete() {
+		service.deleteAll()
+	}
 }
 
 data class Message(val id: String?, val text: String)
@@ -39,5 +44,9 @@ class MessageService(val db: JdbcTemplate) {
 				"insert into messages values ( ?, ? )",
 				id, message.text
 		)
+	}
+
+	fun deleteAll() {
+		db.update("delete from messages")
 	}
 }

@@ -43,7 +43,13 @@ class ItemService(val db: ItemRepository) {
 	fun findItemById(id: String): List<Item> = db.findById(id).toList()
 
 	fun save(item: Item) {
-		db.save(item)
+		val queriedItem = db.findAll().firstOrNull { it.name == item.name }
+		queriedItem?.let {
+			it.quantity++
+			db.save(it)
+		} ?: run {
+			db.save(item)
+		}
 	}
 
 	fun deleteAll() {

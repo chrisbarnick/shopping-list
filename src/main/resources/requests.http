@@ -1,31 +1,14 @@
-### Post "Hello!"
+### Post a test item to the db
 POST http://localhost:8080/
 Content-Type: application/json
 
 {
-  "text": "Hello!"
+  "name": "Beans"
+
 }
 
-### Post "Bonjour!"
-
-POST http://localhost:8080/
-Content-Type: application/json
-
-{
-  "text": "Bonjour!"
-}
-
-### Post "Privet!"
-
-POST http://localhost:8080/
-Content-Type: application/json
-
-{
-  "text": "Hi Michelle!"
-}
-
-### Get all the messages
+### Get all items
 GET http://localhost:8080/
 
-### Deletes all the messages
+### Delete all items
 DELETE http://localhost:8080

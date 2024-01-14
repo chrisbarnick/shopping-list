@@ -2,6 +2,9 @@ package com.cbarnick.shoppinglist
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
+import org.springframework.data.repository.CrudRepository
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.*
@@ -15,13 +18,13 @@ fun main(args: Array<String>) {
 }
 
 @RestController
-class MessageController(val service: MessageService) {
+class ItemController(val service: ItemService) {
 	@GetMapping("/")
-	fun index(): List<Message> = service.findMessages()
+	fun index(): List<Item> = service.getItems()
 
 	@PostMapping("/")
-	fun post(@RequestBody message: Message) {
-		service.save(message)
+	fun post(@RequestBody item: Item) {
+		service.save(item)
 	}
 
 	@DeleteMapping("/")
@@ -30,23 +33,25 @@ class MessageController(val service: MessageService) {
 	}
 }
 
-data class Message(val id: String?, val text: String)
+@Table("ITEMS")
+data class Item(@Id var id: String?, val name: String, var quantity: Int = 1)
 
 @Service
-class MessageService(val db: JdbcTemplate) {
-	fun findMessages(): List<Message> = db.query("select * from messages") { response, _ ->
-		Message(response.getString("id"), response.getString("text"))
-	}
+class ItemService(val db: ItemRepository) {
+	fun getItems(): List<Item> = db.findAll().toList()
 
-	fun save(message: Message) {
-		val id = message.id ?: UUID.randomUUID().toString()
-		db.update(
-				"insert into messages values ( ?, ? )",
-				id, message.text
-		)
+	fun findItemById(id: String): List<Item> = db.findById(id).toList()
+
+	fun save(item: Item) {
+		db.save(item)
 	}
 
 	fun deleteAll() {
-		db.update("delete from messages")
+		db.deleteAll()
 	}
+
+	fun <T : Any> Optional<out T>.toList(): List<T> =
+			if (isPresent) listOf(get()) else emptyList()
 }
+
+interface ItemRepository : CrudRepository<Item, String>

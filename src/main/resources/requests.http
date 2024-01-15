@@ -4,7 +4,6 @@ Content-Type: application/json
 
 {
   "name": "Beans"
-
 }
 
 ### Get all items
